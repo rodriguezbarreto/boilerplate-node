@@ -1,0 +1,39 @@
+version: '3.7'
+services: 
+    db:
+        image: 'postgres:13'
+        container_name: database
+        environment:
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_DB: template_db
+        volumes:
+            - ./pgdata:/usr/var/lib/postgresql/data
+    db_test:
+        image: 'postgres:13'
+        container_name: database_test
+        environment:
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_DB: templete_db_test
+        volumes:
+            - ./pgdata_test:/usr/var/lib/postgresql/data
+
+    api:
+        build: .
+        restart: always
+        container_name: template_api
+        links: 
+            - db
+            - db_test
+        depends_on: 
+            - db
+            - db_test
+        volumes: 
+            - .:/src/
+        ports: 
+            - '4000:4000'      
+
+volumes: 
+    pgdata:
+        driver: local
